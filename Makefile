@@ -5,7 +5,7 @@ endif
 .PHONY:	all versiontest
 
 # Default target
-all:    backup backrestrestore collectserver dbaserver grafana pgadmin4 pgbadger pgbouncer pgdump pgpool pgrestore postgres postgres-gis prometheus promgateway upgrade vac
+all:    backup backrestrestore collectserver dbaserver grafana pgadmin4 pgbadger pgbouncer pgdump pgpool pgrestore postgres postgres-gis prometheus promgateway upgrade vac stig
 
 versiontest:
 ifndef CCP_BASEOS
@@ -66,6 +66,10 @@ grafana: versiontest
 pgadmin4: versiontest
 	docker build -t crunchy-pgadmin4 -f $(CCP_BASEOS)/$(CCP_PGVERSION)/Dockerfile.pgadmin4.$(CCP_BASEOS) .
 	docker tag crunchy-pgadmin4 crunchydata/crunchy-pgadmin4:$(CCP_BASEOS)-$(CCP_PG_FULLVERSION)-$(CCP_VERSION)
+
+pgaudit: versiontest
+	docker build -t crunchy-audit -f $(CCP_BASEOS)/$(CCP_PGVERSION)/Dockerfile.pgaudit.$(CCP_BASEOS) .
+	docker tag crunchy-audit crunchydata/crunchy-audit:$(CCP_BASEOS)-$(CCP_PG_FULLVERSION)-$(CCP_VERSION)
 
 pgbadger: versiontest
 	cd badger && godep go install badgerserver.go
@@ -130,6 +134,12 @@ vac: versiontest
 	cp $(GOBIN)/vacuum bin/vacuum
 	docker build -t crunchy-vacuum -f $(CCP_BASEOS)/Dockerfile.vacuum.$(CCP_BASEOS) .
 	docker tag crunchy-vacuum crunchydata/crunchy-vacuum:$(CCP_BASEOS)-$(CCP_PG_FULLVERSION)-$(CCP_VERSION)
+
+stig: versiontest
+	cp `which kubectl` bin/stig
+	cp `which oc` bin/stig
+	docker build -t crunchy-stig -f $(CCP_BASEOS)/$(CCP_PGVERSION)/Dockerfile.stig.$(CCP_BASEOS) .
+	docker tag crunchy-stig crunchydata/crunchy-stig:$(CCP_BASEOS)-$(CCP_PG_FULLVERSION)-$(CCP_VERSION)
 
 version:
 	docker build -t crunchy-version -f $(CCP_BASEOS)/$(CCP_PGVERSION)/Dockerfile.version.$(CCP_BASEOS) .

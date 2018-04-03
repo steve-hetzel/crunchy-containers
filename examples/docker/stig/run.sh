@@ -33,7 +33,7 @@ echo "starting crunchy-container..."
 #sudo chcon -Rt svirt_sandbox_file_t $DATA_DIR
 
 CONTAINER_NAME=stig
-VOLUME_NAME=stig-example-volume
+VOLUME_NAME=$CONTAINER_NAME-example-volume
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -54,6 +54,7 @@ docker run \
 	--volume-driver=local \
 	-v $VOLUME_NAME:/pgdata:z \
 	-v ${DIR?}/keys:/sshd \
+	-v /run/docker.sock:/run/docker.sock:ro \
 	-e TEMP_BUFFERS=9MB \
 	-e PGHOST=/tmp \
 	-e MAX_CONNECTIONS=101 \
@@ -71,4 +72,4 @@ docker run \
 	-e PG_DATABASE=userdb \
 	--name=$CONTAINER_NAME \
 	--hostname=$CONTAINER_NAME \
-	-d $CCP_IMAGE_PREFIX/crunchy-stig:$CCP_IMAGE_TAG
+	-d $CCP_IMAGE_PREFIX/crunchy-stig:$CCP_IMAGE_TAG 

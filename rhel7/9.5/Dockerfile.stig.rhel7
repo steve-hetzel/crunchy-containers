@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/rhel
+FROM registry.crunchydata.com/crunchydata/crunchy-postgres:rhel7-9.5.12-1.8.2
 
 MAINTAINER Crunchy Data <support@crunchydata.com>
 
@@ -20,6 +20,8 @@ LABEL name="crunchydata/postgres" \
         io.openshift.expose-services="" \
         io.openshift.tags="crunchy,database"
 
+USER root
+
 COPY docs/postgres/help.1 /help.1
 COPY docs/postgres/help.md /help.md
 COPY docs/licenses /licenses
@@ -35,23 +37,11 @@ ADD conf/CRUNCHY-GPG-KEY.public  /
 ADD conf/crunchypg95.repo /etc/yum.repos.d/
 RUN rpm --import CRUNCHY-GPG-KEY.public
 
-RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
- && yum -y update && yum -y install bind-utils \
-    gettext \
-    hostname \
-    nss_wrapper \
-    openssh-server \
-    procps-ng \
-    rsync \
-    net-tools \
+#RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+RUN yum -y install net-tools \
     lsof \
     fipscheck-lib \
     sudo \
- && yum -y reinstall glibc-common \
- && yum -y install postgresql95 postgresql95-contrib postgresql95-server \
-    pgaudit95 pgaudit95_set_user \
-    crunchy-backrest \
- && yum -y --setopt=tsflags='' install pgaudit_analyze \
  && yum -y clean all
 
 RUN echo "postgres ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -73,9 +63,6 @@ RUN chown -R postgres:postgres /opt/cpm /var/lib/pgsql \
 # Remove nologin file to prevent sshd from being blocked
 RUN ln -sf /pgconf/pgbackrest.conf /etc/pgbackrest.conf \
   && rm -f /run/nologin
-
-#RUN if [[ -f /proc/sys/crypto/fips_enabled ]]; then FIPS=$(cat /proc/sys/crypto/fips_enabled ); fi \
-# && if [[ $FIPS = 1 ]]; then touch /etc/system-fips; fi 
 
 # add volumes to allow override of pg_hba.conf and postgresql.conf
 # add volumes to allow backup of postgres files

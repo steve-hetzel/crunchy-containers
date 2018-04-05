@@ -6,7 +6,7 @@ endif
 
 # Default target
 
-all:    backup backrestrestore collect dbaserver grafana pgadmin4 pgbadger pgbouncer pgdump pgpool pgrestore postgres postgres-gis prometheus upgrade vac stig
+all:    backup backrestrestore collect dbaserver grafana pgadmin4 pgbadger pgbouncer pgdump pgpool pgrestore postgres postgres-gis prometheus upgrade vac stig pgstigcheck-inspec
 
 versiontest:
 ifndef CCP_BASEOS
@@ -132,8 +132,14 @@ vac: versiontest
 stig: versiontest
 	cp `which kubectl` bin/stig
 	cp `which oc` bin/stig
-	docker build -t crunchy-stig -f $(CCP_BASEOS)/$(CCP_PGVERSION)/Dockerfile.stig.$(CCP_BASEOS) .
-	docker tag crunchy-stig crunchydata/crunchy-stig:$(CCP_BASEOS)-$(CCP_PG_FULLVERSION)-$(CCP_VERSION)
+	docker build -t crunchy-postgres-stig -f $(CCP_BASEOS)/$(CCP_PGVERSION)/Dockerfile.stig.$(CCP_BASEOS) .
+	docker tag crunchy-postgres-stig crunchydata/crunchy-postgres-stig:$(CCP_BASEOS)-$(CCP_PG_FULLVERSION)-$(CCP_VERSION)
+
+pgstigcheck-inspec: versiontest
+	cp `which kubectl` bin/stig-check
+	cp `which oc` bin/stig-check
+	docker build -t pgstigcheck-inspec -f $(CCP_BASEOS)/Dockerfile.pgstigcheck-inspec.$(CCP_BASEOS) .
+	docker tag pgstigcheck-inspec crunchydata/pgstigcheck-inspec:$(CCP_BASEOS)-$(CCP_PG_FULLVERSION)-$(CCP_VERSION)
 
 version:
 	docker build -t crunchy-version -f $(CCP_BASEOS)/$(CCP_PGVERSION)/Dockerfile.version.$(CCP_BASEOS) .

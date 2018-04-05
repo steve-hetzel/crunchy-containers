@@ -39,13 +39,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 $DIR/cleanup.sh
 
-#mkdir -p ${DIR?}/keys
-#ssh-keygen -f ${DIR?}/keys/id_rsa -t rsa -N ''
-#ssh-keygen -t rsa -f ${DIR?}/keys/ssh_host_rsa_key -N ''
-#ssh-keygen -t ecdsa -f ${DIR?}/keys/ssh_host_ecdsa_key -N ''
-#ssh-keygen -t ed25519 -f ${DIR?}/keys/ssh_host_ed25519_key -N ''
-#cp ${DIR?}/keys/id_rsa.pub ${DIR?}/config/authorized_keys
-
 docker volume create --driver local --name=$VOLUME_NAME
 
 docker run \
@@ -54,7 +47,6 @@ docker run \
 	--volume-driver=local \
 	-v $VOLUME_NAME:/pgdata:z \
 	-v ${DIR?}/keys:/sshd \
-	-v /run/docker.sock:/run/docker.sock:ro \
 	-e TEMP_BUFFERS=9MB \
 	-e PGHOST=/tmp \
 	-e MAX_CONNECTIONS=101 \
@@ -72,4 +64,4 @@ docker run \
 	-e PG_DATABASE=userdb \
 	--name=$CONTAINER_NAME \
 	--hostname=$CONTAINER_NAME \
-	-d $CCP_IMAGE_PREFIX/crunchy-stig:$CCP_IMAGE_TAG 
+	-d $CCP_IMAGE_PREFIX/crunchy-postgres-stig:$CCP_IMAGE_TAG 

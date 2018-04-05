@@ -14,7 +14,7 @@
             "securityContext":{
                $CCP_SECURITY_CONTEXT
             },
-            "image":"$CCP_IMAGE_PREFIX/crunchy-stig:$CCP_IMAGE_TAG",
+            "image":"$CCP_IMAGE_PREFIX/crunchy-postgres-stig:$CCP_IMAGE_TAG",
             "ports":[
                {
                   "containerPort":5432,

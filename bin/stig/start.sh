@@ -364,16 +364,6 @@ function initialize_replica() {
 function initialize_primary() {
     echo "initialize_primary"
 
-    echo "Checking for /proc/sys/crypto/fips_enabled"
-    if [[ -f /proc/sys/crypto/fips_enabled ]]; then 
-	echo "File found" 
-        FIPS=$(cat /proc/sys/crypto/fips_enabled ); 
-    fi \
-    && if [[ $FIPS = 1 ]]; then 
-        echo "FIPS == 1, touching /etc/system-fips." 
-        sudo touch /etc/system-fips; 
-    fi
-
     if [ ! -f $PGDATA/postgresql.conf ]; then
             echo "pgdata is empty and id is..."
         id

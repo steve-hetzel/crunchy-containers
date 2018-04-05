@@ -1,0 +1,67 @@
+FROM registry.access.redhat.com/rhel
+
+MAINTAINER Crunchy Data <support@crunchydata.com>
+
+LABEL name="crunchydata/pgstigcheck-inspec" \
+        vendor="crunchy data" \
+      	PostgresVersion="9.5" \
+      	PostgresFullVersion="9.5.11" \
+        version="7.3" \
+        release="1.8.2" \
+        #build-date="2017-05-11" \
+        url="https://crunchydata.com" \
+	summary="Crunchy pgstigcheck-inspec container for validating Crunchy PG stig container" \
+        description="Container that runs chef/inspec with Ruby to execute controls for validating/reporting on the settings of a crunchy-postgres-stig container instance." \
+        run="" \
+        start="" \
+        stop="" \
+        io.k8s.description="crunchy pgstigcheck-inspec container" \
+        io.k8s.display-name="Crunchy pgstigcheck-inspec container" \
+        io.openshift.expose-services="" \
+        io.openshift.tags="crunchy,database"
+
+USER 2
+
+RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+ && yum -y update && yum -y install bind-utils \
+    gettext \
+    hostname \
+    nss_wrapper \
+    openssh-server \
+    procps-ng \
+    rsync \
+    ruby \
+    lsof \
+    fipscheck-lib \
+    sudo \
+    git \ 
+ && yum -y reinstall glibc-common \
+ && yum -y install postgresql95 postgresql95-contrib postgresql95-server \
+    pgaudit95 pgaudit95_set_user \
+    crunchy-backrest \
+ && yum -y --setopt=tsflags='' install pgaudit_analyze \
+ && yum -y clean all
+
+RUN echo "daemon ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+RUN curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P inspec && inspec --version
+
+ADD conf/.bash_profile /var/lib/pgsql/
+ADD conf/.bash_profile /
+ADD conf/.bashrc /
+
+# set up cpm directory
+RUN mkdir -p /opt/cpm/bin /opt/cpm/conf
+
+VOLUME ["/pgstigcheck"]
+
+# open up the postgres port
+EXPOSE 5432
+
+ADD bin/pgstigcheck-inspec /opt/cpm/bin
+ADD bin/common /opt/cpm/bin
+ADD conf/pgstigcheck-inspec /opt/cpm/conf
+
+RUN git clone https://github.com/CrunchyData/pgstigcheck-inspec /opt/cpm/bin/pgstigcheck-inspec/
+
+CMD ["/opt/cpm/bin/start.sh"]

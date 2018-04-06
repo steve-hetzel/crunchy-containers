@@ -13,4 +13,4 @@
 # limitations under the License.
 
 oc delete job pgstigcheck-inspec-job
-oc delete pvc pgstugcheck-inspec-pvc
+oc delete pvc pgstigcheck-inspec-pvc

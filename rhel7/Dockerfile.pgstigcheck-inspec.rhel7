@@ -20,8 +20,6 @@ LABEL name="crunchydata/pgstigcheck-inspec" \
         io.openshift.expose-services="" \
         io.openshift.tags="crunchy,database"
 
-USER 2
-
 RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
  && yum -y update && yum -y install bind-utils \
     gettext \
@@ -34,15 +32,13 @@ RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.
     lsof \
     fipscheck-lib \
     sudo \
-    git \ 
- && yum -y reinstall glibc-common \
- && yum -y install postgresql95 postgresql95-contrib postgresql95-server \
-    pgaudit95 pgaudit95_set_user \
-    crunchy-backrest \
- && yum -y --setopt=tsflags='' install pgaudit_analyze \
- && yum -y clean all
+    git \
+    epel-release \
+    coreutils \
+ && yum -y clean all 
 
-RUN echo "daemon ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+#RUN echo "daemon ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN echo "%root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 RUN curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P inspec && inspec --version
 
@@ -63,5 +59,8 @@ ADD bin/common /opt/cpm/bin
 ADD conf/pgstigcheck-inspec /opt/cpm/conf
 
 RUN git clone https://github.com/CrunchyData/pgstigcheck-inspec /opt/cpm/bin/pgstigcheck-inspec/
+
+#USER 2
+USER root
 
 CMD ["/opt/cpm/bin/start.sh"]

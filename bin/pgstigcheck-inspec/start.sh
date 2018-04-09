@@ -38,7 +38,7 @@ if [ ! -d "$STIGCHECK_RESULTSPATH" ]; then mkdir $STIGCHECK_RESULTSPATH & chmod 
 
 if [ "$PLATFORM" == docker ]; then CONCAT_DOCKERID="docker://$STIG_DOCKERID"; else CONCAT_DOCKERID=$STIG_DOCKERID; fi
 
-echo "Concatenatd DockerID: $CONCAT_DOCKERID"
+echo "Concatenated DockerID: $CONCAT_DOCKERID"
 ose_hack
 
 echo "Trying to list docker.sock"

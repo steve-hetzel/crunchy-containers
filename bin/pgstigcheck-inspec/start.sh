@@ -38,14 +38,15 @@ if [ ! -d "$STIGCHECK_RESULTSPATH" ]; then mkdir $STIGCHECK_RESULTSPATH & chmod 
 
 if [ "$PLATFORM" == docker ]; then CONCAT_DOCKERID="docker://$STIG_DOCKERID"; else CONCAT_DOCKERID=$STIG_DOCKERID; fi
 
-echo "CONCAT_DOCKERID = $CONCAT_DOCKERID"
+echo "Concatenated DockerID: $CONCAT_DOCKERID"
 ose_hack
 
 echo "Trying to list docker.sock"
 ls -lah /run/docker.sock
 
-echo "sudo inspec exec /opt/cpm/bin/pgstigcheck-inspec/controls/*.rb --attrs /opt/cpm/conf/attributes.yml -t $CONCAT_DOCKERID | /opt/cpm/bin/pgstigcheck-inspec/tools/ansi2html.sh --bg=dark > $STIGCHECK_RESULTSPATH/inspec-report-$STIG_PODNAME-$TS.htm"
+echo "Trying to run:"
+echo "sudo inspec exec /opt/cpm/bin/pgstigcheck-inspec/controls/*.rb --attrs /opt/cpm/conf/attributes.yml -t $CONCAT_DOCKERID | /opt/cpm/bin/pgstigcheck-inspec/tools/ansi2html.sh --bg=dark > $STIGCHECK_RESULTSPATH/inspec-report-$STIG_PODNAME-$TS.html"
 
-sudo inspec exec /opt/cpm/bin/pgstigcheck-inspec/controls/*.rb --attrs /opt/cpm/conf/attributes.yml -t $CONCAT_DOCKERID | sudo /opt/cpm/bin/pgstigcheck-inspec/tools/ansi2html.sh --bg=dark > $STIGCHECK_RESULTSPATH/inspec-report-$STIG_PODNAME-$TS.htm
+sudo inspec exec /opt/cpm/bin/pgstigcheck-inspec/controls/*.rb --attrs /opt/cpm/conf/attributes.yml -t $CONCAT_DOCKERID | /opt/cpm/bin/pgstigcheck-inspec/tools/ansi2html.sh --bg=dark > $STIGCHECK_RESULTSPATH/inspec-report-$STIG_PODNAME-$TS.html
 
-echo "Execution of pgstigcheck-inspec is complete.  The output of the report can be found at: $STIGCHECK_RESULTSPATH/inspec-report-$STIG_PODNAME-$TS.htm"
+echo "Execution of pgstigcheck-inspec is complete.  The output of the report can be found at: $STIGCHECK_RESULTSPATH/inspec-report-$STIG_PODNAME-$TS.html"

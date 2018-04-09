@@ -18,6 +18,10 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 $DIR/cleanup.sh
 
+export STIG_PODNAME=stig
+export STIGCHECK_RESULTSPATH=/mnt/nfsfileshare/pgstigcheck-inspec-results
+export STIG_DOCKERID=$(oc describe po $STIG_PODNAME | grep "Container ID" | awk '{print $3}')
+
 oc create -f $DIR/pgstigcheck-inspec-pvc.json
 
 expenv -f $DIR/pgstigcheck-inspec-job.json | oc create -f -

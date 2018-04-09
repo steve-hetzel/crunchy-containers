@@ -1,4 +1,5 @@
-nd":"Job",
+{
+   "kind":"Job",
    "apiVersion":"batch/v1",
    "metadata":{
       "name":"pgstigcheck-inspec-job"

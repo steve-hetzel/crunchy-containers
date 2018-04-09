@@ -1,0 +1,57 @@
+FROM centos:7
+
+LABEL name="crunchydata/pgstigcheck-inspec" \
+        vendor="crunchy data" \
+        version="7.3" \
+        release="1.8.2" \
+        #build-date="2017-05-11" \
+        url="https://crunchydata.com" \
+        summary="Crunchy pgstigcheck-inspec container for validating Crunchy PG stig container" \
+        description="Container that runs chef/inspec with Ruby to execute controls for validating/reporting on the settings of a crunchy-postgres-stig container instance." \
+        run="" \
+        start="" \
+        stop="" \
+        io.k8s.description="pgstigcheck-inspec container" \
+        io.k8s.display-name="pgstigcheck-inspec container" \
+        io.openshift.expose-services="" \
+        io.openshift.tags="crunchy,database"
+
+RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+RUN yum -y install ruby \
+    lsof \
+    fipscheck-lib \
+    sudo \
+    git \
+    gettext \
+    hostname  \
+    nss_wrapper \
+    procps-ng \
+    epel-release \
+ && yum -y clean all
+
+RUN echo "daemon ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+RUN curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P inspec && inspec --version
+
+ADD conf/.bash_profile /var/lib/pgsql/
+ADD conf/.bash_profile /
+ADD conf/.bashrc /
+
+# set up cpm directory
+RUN mkdir -p /opt/cpm/bin /opt/cpm/conf
+
+VOLUME ["/pgstigcheck"]
+
+# open up the postgres port
+EXPOSE 5432
+
+ADD bin/pgstigcheck-inspec /opt/cpm/bin
+ADD bin/common /opt/cpm/bin
+ADD conf/pgstigcheck-inspec /opt/cpm/conf
+
+RUN git clone https://github.com/CrunchyData/pgstigcheck-inspec /opt/cpm/bin/pgstigcheck-inspec/
+
+USER 2
+
+CMD ["/opt/cpm/bin/start.sh"]

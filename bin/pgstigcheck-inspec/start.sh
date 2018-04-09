@@ -13,13 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo $(whoami)
-echo "$UID"
-echo "$GID"
-echo $(id)
-cat /etc/passwd
-cat /etc/group
-
 source /opt/cpm/bin/common_lib.sh
 enable_debugging
 ose_hack

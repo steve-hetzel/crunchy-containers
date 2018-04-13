@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -16,6 +16,20 @@
 echo "Cleaning up..."
 
 CONTAINER_NAME=pgbouncer
+PRIMARY_CONTAINER_NAME=pg-primary
+REPLICA_CONTAINER_NAME=pg-replica
+
+PRIMARY_VOLUME_NAME=${PRIMARY_CONTAINER_NAME}-pgdata
+REPLICA_VOLUME_NAME=${REPLICA_CONTAINER_NAME}-pgdata
 
 docker stop $CONTAINER_NAME
 docker rm -v $CONTAINER_NAME
+
+docker stop $PRIMARY_CONTAINER_NAME
+docker rm -v $PRIMARY_CONTAINER_NAME
+
+docker stop $REPLICA_CONTAINER_NAME
+docker rm -v $REPLICA_CONTAINER_NAME
+
+docker volume rm $PRIMARY_VOLUME_NAME
+docker volume rm $REPLICA_VOLUME_NAME

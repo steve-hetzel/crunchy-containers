@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -25,8 +25,8 @@ docker rm crunchy-collect
 docker rm crunchy-prometheus
 docker rm crunchy-grafana
 
-docker volume rm pgsql-volume
-docker volume rm metrics-volume
+docker volume rm pgsql-pgdata
+docker volume rm metrics-data
 docker network rm pgnet
 
 exit 0

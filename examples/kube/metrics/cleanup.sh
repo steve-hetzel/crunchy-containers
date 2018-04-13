@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -13,16 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kubectl delete clusterrolebinding prometheus
-kubectl delete clusterrole prometheus
-kubectl delete sa prometheus
-kubectl delete pod crunchy-metrics
-kubectl delete pod crunchy-pgsql
-kubectl delete service crunchy-metrics
-kubectl delete service crunchy-pgsql
+${CCP_CLI?} delete clusterrolebinding prometheus-sa
+${CCP_CLI?} delete clusterrole prometheus-sa
+${CCP_CLI?} delete sa prometheus-sa
+${CCP_CLI?} delete pod metrics
+${CCP_CLI?} delete pod pgsql
+${CCP_CLI?} delete service metrics
+${CCP_CLI?} delete service pgsql
 
-kubectl delete pvc metrics-prometheus-pvc
-kubectl delete pvc metrics-grafana-pvc
+${CCP_CLI?} delete pvc metrics-prometheusdata
+${CCP_CLI?} delete pvc metrics-grafanadata
+${CCP_CLI?} delete pv metrics-prometheusdata
+${CCP_CLI?} delete pv metrics-grafanadata
 
-$CCPROOT/examples/waitforterm.sh crunchy-metrics kubectl
-$CCPROOT/examples/waitforterm.sh crunchy-pgsql kubectl
+$CCPROOT/examples/waitforterm.sh metrics ${CCP_CLI?}
+$CCPROOT/examples/waitforterm.sh pgsql ${CCP_CLI?}

@@ -1,0 +1,93 @@
+{
+    "kind": "PersistentVolumeClaim",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "pgdump-pgdata"
+    },
+    "spec": {
+        "selector": {
+          "matchLabels": {
+            "name": "pgdump-pgdata"
+          }
+        },
+        "accessModes": [
+            "ReadWriteMany"
+        ],
+        "resources": {
+            "requests": {
+                "storage": "400M"
+            }
+        }
+    }
+}
+
+{
+    "apiVersion": "batch/v1",
+    "kind": "Job",
+    "metadata": {
+        "name": "pgdump"
+    },
+    "spec": {
+        "template": {
+            "metadata": {
+                "name": "pgdump",
+                "labels": {
+                    "app": "pgdump"
+                }
+            },
+            "spec": {
+                "volumes": [
+                    {
+                        "name": "pgdata",
+                        "persistentVolumeClaim": {
+                            "claimName": "pgdump-pgdata"
+                        }
+                    }
+                ],
+                "securityContext": {
+                    $CCP_SECURITY_CONTEXT
+                },
+                "containers": [
+                    {
+                        "name": "pgdump",
+                        "image": "$CCP_IMAGE_PREFIX/crunchy-pgdump:$CCP_IMAGE_TAG",
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/pgdata",
+                                "name": "pgdata",
+                                "readOnly": false
+                            }
+                        ],
+                        "env": [
+                            {
+                                "name": "PGDUMP_HOST",
+                                "value": "primary"
+                            },
+                            {
+                                "name": "PGDUMP_USER",
+                                "value": "postgres"
+                            },
+                            {
+                                "name": "PGDUMP_PASS",
+                                "value": "password"
+                            },
+                            {
+                                "name": "PGDUMP_PORT",
+                                "value": "5432"
+                            },
+                            {
+                                "name": "PGDUMP_ALL",
+                                "value": "true"
+                            },
+                            {
+                                "name": "PGDUMP_VERBOSE",
+                                "value": "true"
+                            }
+                        ]
+                    }
+                ],
+                "restartPolicy": "Never"
+            }
+        }
+    }
+}

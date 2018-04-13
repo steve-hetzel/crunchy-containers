@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2017 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kubectl delete statefulset pgset
-kubectl delete sa pgset-sa
-kubectl delete pvc pgset-pvc
-kubectl delete pv pv1 pv2 pv3
-kubectl delete service pgset pgset-primary pgset-replica
-kubectl delete pod pgset-0 pgset-1
+${CCP_CLI?} delete statefulset statefulset
+${CCP_CLI?} delete sa statefulset-sa
+${CCP_CLI?} delete clusterrolebinding statefulset-sa
+${CCP_CLI?} delete pvc statefulset-pgdata
+${CCP_CLI?} delete pv statefulset-pgdata
+${CCP_CLI?} delete service statefulset statefulset-primary statefulset-replica
+${CCP_CLI?} delete pod statefulset-0 statefulset-1

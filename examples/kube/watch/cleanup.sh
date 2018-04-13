@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kubectl delete pod watch
-../../waitforterm.sh watch kubectl
+${CCP_CLI?} delete pod watch
+../../waitforterm.sh watch ${CCP_CLI?}
 
-kubectl delete sa pg-watcher
+${CCP_CLI?} delete sa pg-watcher
 
-kubectl delete rolebinding pg-watcher-sa-edit
+${CCP_CLI?} delete rolebinding pg-watcher-sa-edit
 
-kubectl delete configmap watch-hooks-configmap
+${CCP_CLI?} delete configmap watch-hooks-configmap

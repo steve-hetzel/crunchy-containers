@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2017 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -18,7 +18,5 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 $DIR/cleanup.sh
 
-kubectl create -f $DIR/upgrade-old-pvc.json
-kubectl create -f $DIR/upgrade-new-pvc.json
-
-expenv -f $DIR/upgrade-job.json | kubectl create -f -
+expenv -f $DIR/upgrade-pv.json | ${CCP_CLI?} create -f -
+expenv -f $DIR/upgrade.json | ${CCP_CLI?} create -f -

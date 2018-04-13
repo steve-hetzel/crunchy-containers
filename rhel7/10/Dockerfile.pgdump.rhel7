@@ -1,8 +1,8 @@
-FROM registry.access.redhat.com/rhel
+FROM registry.access.redhat.com/rhel7
 
 MAINTAINER Crunchy Data <support@crunchydata.com>
 
-LABEL name="crunchydata/dump" \
+LABEL name="crunchydata/pgdump" \
         vendor="crunchy data" \
       	PostgresVersion="10" \
       	PostgresFullVersion="10.3" \
@@ -20,8 +20,8 @@ LABEL name="crunchydata/dump" \
         io.openshift.expose-services="" \
         io.openshift.tags="crunchy,database"
 
-COPY docs/pgdump/help.1 /help.1
-COPY docs/pgdump/help.md /help.md
+COPY docs/atomic/pgdump/help.1 /help.1
+COPY docs/atomic/pgdump/help.md /help.md
 COPY docs/licenses /licenses
 
 ENV PGVERSION="10"

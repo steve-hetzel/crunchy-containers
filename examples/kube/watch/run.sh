@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -16,15 +16,15 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 $DIR/cleanup.sh
 
-kubectl create configmap watch-hooks-configmap \
+${CCP_CLI?} create configmap watch-hooks-configmap \
                 --from-file=./hooks/watch-pre-hook \
                 --from-file=./hooks/watch-post-hook
 
-kubectl create -f $DIR/watch-sa.json
+${CCP_CLI?} create -f $DIR/watch-sa.json
 
-kubectl create rolebinding pg-watcher-sa-edit \
+${CCP_CLI?} create rolebinding pg-watcher-sa-edit \
   --clusterrole=edit \
   --serviceaccount=$CCP_NAMESPACE:pg-watcher \
   --namespace=$CCP_NAMESPACE
 
-envsubst < $DIR/watch-pod.yaml | kubectl create -f -
+envsubst < $DIR/watch.yaml | ${CCP_CLI?} create -f -

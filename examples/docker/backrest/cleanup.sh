@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -17,6 +17,7 @@ echo "Cleaning up..."
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-CONTAINER=backrest
-docker rm -f --volumes $CONTAINER-ls $CONTAINER-setup
-docker rm -f --volumes $CONTAINER
+CONTAINER_NAME=backrest
+
+docker rm -f --volumes $CONTAINER_NAME-ls $CONTAINER_NAME-setup
+docker rm -f --volumes $CONTAINER_NAME

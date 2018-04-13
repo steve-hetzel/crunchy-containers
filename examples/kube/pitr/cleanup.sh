@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -11,17 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# remove any existing components of this example 
+# remove any existing components of this example
 
-kubectl delete pod primary-pitr-restore
-kubectl delete service primary-pitr-restore
-sudo CCP_STORAGE_PATH=$CCP_STORAGE_PATH rm -rf $CCP_STORAGE_PATH/primary-pitr-restore
+${CCP_CLI?} delete pod restore-pitr
+${CCP_CLI?} delete service restore-pitr
+sudo CCP_STORAGE_PATH=$CCP_STORAGE_PATH rm -rf $CCP_STORAGE_PATH/restore-pitr
 
-kubectl delete service primary-pitr primary-pitr-restore
-kubectl delete pod primary-pitr
-kubectl delete job primary-pitr-backup-job
+${CCP_CLI?} delete service pitr
+${CCP_CLI?} delete pod pitr
+${CCP_CLI?} delete job backup-pitr
 
-kubectl delete pvc primary-pitr-pvc primary-pitr-pgwal-pvc primary-pitr-backup-pvc backup-primary-pitr-pvc primary-pitr-restore-pvc recover-pvc 
+${CCP_CLI?} delete pvc pitr-pgdata pitr-pgwal backup-pitr-pgdata restore-pitr-pgdata recover-pvc
+${CCP_CLI?} delete pv pitr-pgdata pitr-pgwal backup-pitr-pgdata restore-pitr-pgdata recover-pv
 
-sudo CCP_STORAGE_PATH=$CCP_STORAGE_PATH rm -rf $CCP_STORAGE_PATH/WAL/primary-pitr
-sudo CCP_STORAGE_PATH=$CCP_STORAGE_PATH rm -rf $CCP_STORAGE_PATH/primary-pitr
+sudo CCP_STORAGE_PATH=$CCP_STORAGE_PATH rm -rf $CCP_STORAGE_PATH/WAL/pitr
+sudo CCP_STORAGE_PATH=$CCP_STORAGE_PATH rm -rf $CCP_STORAGE_PATH/pitr

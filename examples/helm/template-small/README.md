@@ -8,7 +8,7 @@ TL;DR;
 ------
 
 ```console
-$ helm install basic --name basic
+$ helm install template-small --name template-small
 ```
 
 Introduction
@@ -74,11 +74,11 @@ Configuration
 See `values.yaml` for configuration notes. Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```console
-$ helm install basic --name basic \
-  --set Image.tag=centos7-10.3-1.8.2
+$ helm install template-small --name template-small \
+  --set Image.tag=centos7-9.6.8-1.8.2
 ```
 
-The above command changes the image tag of the container from the default of `centos7-9.6.8-1.8.2` to `centos7-10.3-1.8.2`.
+The above command changes the image tag of the container from the default of `centos7-10.3-1.8.2` to `centos7-9.6.8-1.8.2`.
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
 
@@ -94,9 +94,6 @@ The above command changes the image tag of the container from the default of `ce
 | `.image.repository` | The repository on DockerHub where the images are found.    | `crunchydata`                                           |
 | `.image.container` | The container to be pulled from the repository.    | `crunchy-postgres`                                                    |
 | `.image.tag` | The image tag to be used.    | `centos7-10.3-1.8.2`                                                    |
-| `.pv.storage` | Size of persistent volume     | 400M                                                    |
-| `.pv.name` | Name of persistent volume    | `template-small-pv`                                                    |
-| `.pvc.name` | Name of persistent volume    | `template-small-pvc`                                                    |
 | `.resources.cpu` | Defines a limit for CPU    | `200m`                                                    |
 | `.resources.memory` | Defines a limit for memory    | `512Mi`                                                    |
 
@@ -110,7 +107,7 @@ $ helm install template-small --name template-small  \
 Legal Notices
 -------------
 
-Copyright © 2017 Crunchy Data Solutions, Inc.
+Copyright 2017 - 2018 Crunchy Data Solutions, Inc.
 
 CRUNCHY DATA SOLUTIONS, INC. PROVIDES THIS GUIDE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF NON INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 

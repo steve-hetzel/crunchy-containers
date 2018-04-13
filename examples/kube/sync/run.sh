@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -18,9 +18,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 $DIR/cleanup.sh
 
-kubectl create -f $DIR/primary-sync-service.json
-kubectl create -f $DIR/replica-sync-service.json
-
-expenv -f $DIR/primary-sync-pod.json | kubectl create -f -
-expenv -f $DIR/replica-async-pod.json | kubectl create -f -
-expenv -f $DIR/replica-sync-pod.json | kubectl create -f -
+expenv -f $DIR/sync.json | ${CCP_CLI?} create -f -

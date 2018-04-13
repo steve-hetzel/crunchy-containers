@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -14,7 +14,7 @@
 # limitations under the License.
 
 for i in \
-restore dump postgres-gis prometheus grafana collect pgbadger pgpool \
+restore pgdump postgres-gis prometheus grafana collect pgbadger pgpool \
 watch backup postgres pgbouncer pgadmin4 vacuum dba upgrade backrest-restore
 do
 	docker rmi -f  $CCP_IMAGE_PREFIX/crunchy-$i:$CCP_IMAGE_TAG

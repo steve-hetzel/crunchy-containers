@@ -17,9 +17,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 $DIR/cleanup.sh
 
-kubectl create -f $DIR/audit-service.json
-expenv -f $DIR/audit.json | kubectl create -f -
-echo "Sleeping for 20s to allow time for pod to get into a ready state."
+expenv -f $DIR/pgaudit.json | ${CCP_CLI?} create -f -
+echo "Sleeping for 20s to allow time for the pod to get into a ready state."
 sleep 20
 
 $DIR/test-pgaudit.sh

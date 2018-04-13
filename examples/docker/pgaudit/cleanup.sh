@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -14,8 +14,9 @@
 # limitations under the License.
 
 echo "Cleaning up..."
-CONTAINER_NAME=audittest
-VOLUME=$CONTAINER_NAME-volume
+
+CONTAINER_NAME=pgaudit
+VOLUME_NAME=$CONTAINER_NAME-pgdata
 
 docker rm -f $CONTAINER_NAME
-docker volume rm $VOLUME
+docker volume rm $VOLUME_NAME

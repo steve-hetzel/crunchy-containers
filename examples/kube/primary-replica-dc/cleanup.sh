@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2017 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -15,11 +15,11 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-kubectl scale --replicas=0 deployment/replica-dc
+${CCP_CLI?} scale --replicas=0 deployment/replica-dc
 sleep 1
-kubectl delete deployment replica-dc
+${CCP_CLI?} delete deployment replica-dc
 sleep 3
-kubectl delete pod primary-dc
+${CCP_CLI?} delete pod primary-dc
 sleep 3
-kubectl delete service primary-dc
-kubectl delete service replica-dc
+${CCP_CLI?} delete service primary-dc
+${CCP_CLI?} delete service replica-dc

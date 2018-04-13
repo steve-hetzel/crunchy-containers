@@ -1,0 +1,101 @@
+{
+    "kind": "PersistentVolumeClaim",
+    "apiVersion": "v1",
+    "metadata": {
+      "name": "pgrestore-pgdata"
+    },
+    "spec": {
+      "selector": {
+        "matchLabels": {
+          "name": "pgrestore-pgdata"
+        }
+      },
+      "accessModes": [
+        "ReadWriteMany"
+      ],
+      "resources": {
+        "requests": {
+          "storage": "400M"
+        }
+      }
+    }
+}
+
+{
+     "apiVersion":"batch/v1",
+     "kind":"Job",
+     "metadata":{
+        "name":"pgrestore"
+     },
+     "spec":{
+        "template":{
+           "metadata":{
+              "name":"pgrestore",
+              "labels":{
+                 "app":"pgrestore"
+              }
+           },
+           "spec":{
+              "volumes":[
+                 {
+                    "name":"pgdata",
+                    "persistentVolumeClaim":{
+                       "claimName":"pgrestore-pgdata"
+                    }
+                 }
+              ],
+              "securityContext":{
+                 $CCP_SECURITY_CONTEXT
+              },
+              "containers":[
+                 {
+                    "name":"pgrestore",
+                    "image":"$CCP_IMAGE_PREFIX/crunchy-pgrestore:$CCP_IMAGE_TAG",
+                    "volumeMounts":[
+                       {
+                          "mountPath":"/pgdata",
+                          "name":"pgdata",
+                          "readOnly":false
+                       }
+                    ],
+                    "env":[
+                       {
+                          "name":"PGRESTORE_HOST",
+                          "value":"primary"
+                       },
+                       {
+                          "name":"PGRESTORE_DB",
+                          "value":"postgres"
+                       },
+                       {
+                          "name":"PGRESTORE_USER",
+                          "value":"postgres"
+                       },
+                       {
+                          "name":"PGRESTORE_PASS",
+                          "value":"password"
+                       },
+                       {
+                          "name":"PGRESTORE_PORT",
+                          "value":"5432"
+                       },
+                       {
+                          "name":"PGRESTORE_VOLUMEPATH",
+                          "value":"/pgdata/$PGDUMP_HOST-dumps/$PGDUMP_PATH"
+                       },
+                       {
+                          "name":"PGRESTORE_FILE",
+                          "value":"pgdumpall.sql"
+                       },
+                       {
+                          "name":"PGRESTORE_FORMAT",
+                          "value":"p"
+                       }
+                    ]
+                 }
+              ],
+              "restartPolicy":"Never"
+           }
+        }
+     }
+}

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,14 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-kubectl delete service primary-backrest
-kubectl delete pod primary-backrest
-kubectl delete configmap backrestconf
-kubectl delete job backrest-job-nfs
-kubectl delete pvc backrest-pvc backrest-backrestrepo-pvc
-
-sudo CCP_STORAGE_PATH=$CCP_STORAGE_PATH rm -rf $CCP_STORAGE_PATH/archive $CCP_STORAGE_PATH/backup
+${CCP_CLI?} delete service backrest
+${CCP_CLI?} delete pod backrest
+${CCP_CLI?} delete configmap backrest-pgconf
+${CCP_CLI?} delete pvc backrest-pgdata backrest-backrestrepo
+${CCP_CLI?} delete pv backrest-pgdata backrest-backrestrepo

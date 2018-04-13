@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2017 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-kubectl delete job backrest-job-nfs
-kubectl delete pvc backrest-restore-pvc
+$DIR/cleanup.sh
 
-expenv -f $DIR/full-restore-job.json | kubectl create -f -
+expenv -f $DIR/backrest-restore-pv.json | ${CCP_CLI?} create -f -
+expenv -f $DIR/full-restore.json | ${CCP_CLI?} create -f -

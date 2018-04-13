@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -16,15 +16,13 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-kubectl delete pod primary-pitr-restore
-kubectl delete pod primary-pitr
-$CCPROOT/examples/waitforterm.sh primary-pitr kubectl
-$CCPROOT/examples/waitforterm.sh primary-pitr-restore kubectl
+${CCP_CLI?} delete pod restore-pitr
+${CCP_CLI?} delete pod pitr
+$CCPROOT/examples/waitforterm.sh pitr ${CCP_CLI?}
+$CCPROOT/examples/waitforterm.sh restore-pitr ${CCP_CLI?}
+${CCP_CLI?} delete pvc recover-pvc restore-pitr-pgdata
+${CCP_CLI?} delete pv recover-pv restore-pitr-pgdata
+${CCP_CLI?} delete svc restore-pitr
 
-kubectl create -f $DIR/recover-pv.json
-kubectl create -f $DIR/recover-pvc.json
-kubectl create -f $DIR/primary-pitr-restore-pvc.json
-
-# start up the database container
-expenv -f $DIR/primary-pitr-restore-service.json | kubectl create -f -
-expenv -f $DIR/primary-pitr-restore-pod.json | kubectl create -f -
+expenv -f $DIR/restore-pitr-pv.json | ${CCP_CLI?} create -f -
+expenv -f $DIR/restore-pitr.json | ${CCP_CLI?} create -f -

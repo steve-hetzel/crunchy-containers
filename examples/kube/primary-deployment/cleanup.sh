@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2017 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,10 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kubectl delete deploy primary-dc replica-dc replica2-dc
-kubectl delete configmap postgresql-conf
-kubectl delete secret pguser-secret pgprimary-secret pgroot-secret
+${CCP_CLI?} delete deploy primary-deployment replica-deployment replica2-deployment
+${CCP_CLI?} delete configmap primary-deployment-pgconf
+${CCP_CLI?} delete secret pguser-secret pgprimary-secret pgroot-secret
+
 sleep 10
-kubectl delete service primary-dc
-kubectl delete service replica-dc
-kubectl delete pvc primary-dc-pgwal-pvc primary-dc-pgbackrest-pvc
+
+${CCP_CLI?} delete service primary-deployment
+${CCP_CLI?} delete service replica-deployment
+
+${CCP_CLI?} delete pvc primary-deployment-pgwal primary-deployment-pgbackrest primary-deployment-pgdata
+${CCP_CLI?} delete pvc replica-deployment-pgwal replica-deployment-pgbackrest replica-deployment-pgdata
+${CCP_CLI?} delete pvc replica2-deployment-pgwal replica2-deployment-pgbackrest replica2-deployment-pgdata
+
+${CCP_CLI?} delete pv primary-deployment-pgwal primary-deployment-pgbackrest primary-deployment-pgdata
+${CCP_CLI?} delete pv replica-deployment-pgwal replica-deployment-pgbackrest replica-deployment-pgdata
+${CCP_CLI?} delete pv replica2-deployment-pgwal replica2-deployment-pgbackrest replica2-deployment-pgdata

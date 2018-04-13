@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/rhel
+FROM registry.access.redhat.com/rhel7
 
 MAINTAINER Crunchy Data <support@crunchydata.com>
 
@@ -20,8 +20,8 @@ LABEL name="crunchydata/upgrade" \
         io.openshift.expose-services="" \
         io.openshift.tags="crunchy,database"
 
-COPY docs/upgrade/help.1 /help.1
-COPY docs/upgrade/help.md /help.md
+COPY docs/atomic/upgrade/help.1 /help.1
+COPY docs/atomic/upgrade/help.md /help.md
 COPY docs/licenses /licenses
 
 ENV PGVERSION="10"

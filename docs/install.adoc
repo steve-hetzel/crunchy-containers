@@ -6,10 +6,10 @@ v1.8.2, {docdate}
 
 == Project Setup
 
-The crunchy-containers can run on different environments including:
+The Crunchy Container Suite can run on different environments including:
 
- * *Docker 1.12*
- * *OpenShift Container Platform 3.6*
+ * *Docker 1.12+*
+ * *OpenShift Container Platform 3.6+*
  * *Kubernetes 1.8+*
 
 In this document we list the basic installation steps required for these
@@ -39,18 +39,19 @@ export CCP_SECURITY_CONTEXT=""
 export CCP_CLI=kubectl
 export CCP_NAMESPACE=demo
 export CCP_STORAGE_PATH=/data
-export REPLACE_CCP_IMAGE_PREFIX=crunchydata
+export CCP_STORAGE_MODE=ReadWriteMany
+export CCP_STORAGE_CAPACITY=400M
 ....
 
-Note:  the CCP_SECURITY_CONTEXT and CCP_STORAGE_PATH settings above indicates you
+NOTE:  the `CCP_SECURITY_CONTEXT` and `CCP_STORAGE_PATH` settings above indicate you
 intend to use *HostPath* storage.  NFS and dynamic storage are
 other options, see below for details on configuring storage.
 
-Note:  the CCP_CLI setting above indicates you are running the
-examples on a Kubernetes platform and not an Openshift platform.  For
-Openshift, use the value of *oc* as the CCP_CLI variable instead.
+NOTE:  the `CCP_CLI` setting above indicates you are running the
+examples on a Kubernetes platform and not an OpenShift platform.  For
+OpenShift, use the value of *oc* as the `CCP_CLI` variable instead.
 
-Next, it will be necessary to refresh your bashrc file in order for the changes to take
+It will be necessary to refresh your `.bashrc` file in order for the changes to take
 effect.
 
 ....
@@ -82,10 +83,10 @@ git checkout 1.8.2
 go get github.com/blang/expenv
 ....
 
-*If you are a Crunchy enterprise customer, you will place the Crunchy repository
-key and yum repository file into the $CCPROOT/conf directory at this point. These
+NOTE: If you are a Crunchy enterprise customer, you will place the Crunchy repository
+key and yum repository file into the `$CCPROOT/conf` directory at this point. These
 files can be obtained through https://access.crunchydata.com/ on the downloads
-page.*
+page.
 
 ==== RHEL 7
 
@@ -107,16 +108,29 @@ git checkout 1.8.2
 go get github.com/blang/expenv
 ....
 
-*If you are a Crunchy enterprise customer, you will place the Crunchy repository
-key and yum repository file into the $CCPROOT/conf directory at this point. These
+NOTE: If you are a Crunchy enterprise customer, you will place the Crunchy repository
+key and yum repository file into the `$CCPROOT/conf` directory at this point. These
 files can be obtained through https://access.crunchydata.com/ on the downloads
-page.*
+page.
 
-=== Creating a Demo Namespace on Kubernetes
+=== Creating a Demo Namespace
+
+In Kubernetes, a concept called a *namespace* provides the means to separate
+created resources or components into individual logically grouped partitions.
+
+It is considered a best practice to have dedicated namespaces for projects in
+both testing and production environments.
+
+NOTE: All examples in the Crunchy Container Suite operate within the namespace
+defined by the environment variable `$CCP_NAMESPACE`. The instructions below
+illustrate how to set up and work within new namespaces or projects in both
+Kubernetes and OpenShift.
+
+==== Kubernetes
 
 This section will illustrate how to set up a new Kubernetes namespace called *demo*, and will
 then show how to provide permissions to that namespace to allow the Kubernetes examples to run
-within that namespace. This is a *requirement* for running the examples.
+within that namespace.
 
 First, view currently existing namespaces:
 ....
@@ -136,7 +150,7 @@ NAME      STATUS    AGE
 demo      Active    7s
 ....
 
-Then we'll set the namespace as our current location:
+Then set the namespace as the current location to avoid using the wrong namespace:
 ....
 $ kubectl config set-context $(kubectl config current-context) --namespace=demo
 ....
@@ -147,23 +161,23 @@ $ kubectl config view | grep namespace:
     namespace: demo
 ....
 
-=== Creating a Demo Namespace on OpenShift
+=== OpenShift
 
-This section assumes you are first logging into Openshift as a normal
+This section assumes you are first logging into OpenShift as a normal
 user such as:
 ....
 oc login -u someuser
 ....
 
-For our development purposes only, we typically specify OCP
-Authorization policy of *AllowAll* as documented here:
+For our development purposes only, we typically specify the OCP
+Authorization policy of `AllowAll` as documented here:
 
 https://docs.openshift.com/container-platform/3.7/install_config/configuring_authentication.html#AllowAllPasswordIdentityProvider
 
 We do not recommend this authentication policy for a production
 deployment of OCP.
 
-You next will create a *demo* namespace to run the examples within, the
+The next step is to create a *demo* namespace to run the examples within. The
 name of this OCP project will be what you supply in the CCP_NAMESPACE
 environment variable:
 ....
@@ -173,7 +187,7 @@ Now using project "demo" on server "https://127.0.0.1:8443".
 $ export CCP_NAMESPACE=demo
 ....
 
-If we view the list of projects, we can see the new project has been added and is ``active''.
+If we view the list of projects, we can see the new project has been added and is "active".
 ....
 $ oc get projects
 NAME        DISPLAY NAME         STATUS
@@ -195,7 +209,7 @@ through the official PGDG repository. View the documentation located
 link:https://wiki.postgresql.org/wiki/YUM_Installation[here] in
 order to view more detailed notes or install a different version of PostgreSQL.
 
-Locate and edit your distributions .repo file, located:
+Locate and edit your distribution's `.repo` file, located:
 
  * On CentOS: /etc/yum.repos.d/CentOS-Base.repo, [base] and [updates] sections
  * On Red Hat: /etc/yum/pluginconf.d/rhnplugin.conf [main] section
@@ -242,7 +256,7 @@ Now we'll install Docker.
 sudo yum -y install docker
 ....
 
-After that, it's necessary to add the *docker* group and give your user access
+After that, it's necessary to add the `docker` group and give your user access
 to that group (here referenced as *someuser*):
 ....
 sudo groupadd docker
@@ -257,7 +271,7 @@ su - someuser
 ....
 
 You can ensure your *someuser* account is added correctly by running the following
-command and ensuring *docker* appears as one of the results:
+command and ensuring `docker` appears as one of the results:
 ....
 groups
 ....
@@ -275,26 +289,26 @@ These steps are illustrative of a typical process for setting up Docker storage.
 
 First, add an extra virtual hard disk to your virtual machine (see link:http://catlingmindswipe.blogspot.com/2012/02/how-to-create-new-virtual-disks-in.html[this blog post] for tips on how to do so).
 
-Run this command to format the drive, where /dev/sd? is the new hard drive that was added:
+Run this command to format the drive, where `/dev/sd?` is the new hard drive that was added:
 
 ....
 fdisk /dev/sd?
 ....
 
-Next, create a volume group on the new drive partition within the fdisk utility:
+Next, create a volume group on the new drive partition within the `fdisk` utility:
 
 ....
 vgcreate docker-vg /dev/sd?
 ....
 
-Then, you'll need to edit the docker-storage-setup configuration file in order to override default options. Add these two lines to **/etc/sysconfig/docker-storage-setup**:
+Then, you'll need to edit the `docker-storage-setup` configuration file in order to override default options. Add these two lines to `/etc/sysconfig/docker-storage-setup`:
 
 ....
 DEVS=/dev/sd?
 VG=docker-vg
 ....
 
-Finally, run the command **docker-storage-setup** to use that new volume group. The results should state that the physical volume /dev/sd? and the volume group docker-vg have both been successfully created.
+Finally, run the command `docker-storage-setup` to use that new volume group. The results should state that the physical volume `/dev/sd?` and the volume group `docker-vg` have both been successfully created.
 
 Next, we enable and start up Docker:
 ....
@@ -351,68 +365,61 @@ is to be used.
 
 === Configure HostPath
 
-HostPath is the simplist storage backend to setup, it only is feasible
-on a single node but is good for testing the examples.  In your *.bashrc*
+HostPath is the simplest storage backend to setup. It is only feasible
+on a single node but is sufficient for testing the examples.  In your `.bashrc`
 file, add the following variables to specify unique settings to
-your hostpath directory:
+the HostPath directory:
 ....
 export CCP_SECURITY_CONTEXT=""
 export CCP_STORAGE_PATH=/data
+export CCP_STORAGE_MODE=ReadWriteMany
+export CCP_STORAGE_CAPACITY=400M
 ....
 
-Then create the hostPath example volumes using:
-....
-sudo mkdir $CCP_STORAGE_PATH
-sudo chmod 777 $CCP_STORAGE_PATH
-cd $CCPROOT/examples/pv
-./create-pv.sh hostpath
-....
-
-This set of scripts will create 100 sample Persistent Volumes that
-all point to */data*.
+NOTE: It may be necessary to grant your user in OpenShift or Kubernetes the
+rights to modify the hostaccess SCC. This can be done with the command: `oadm policy add-scc-to-user hostaccess $(oc whoami)`
 
 === Configure NFS for Persistence
 
-NFS can be used for the examples as well.  Instructions
+NFS can also be used as a storage mechanism.  Instructions
 on setting up NFS are found at the bottom of this guide.
 
 For testing with NFS, in your *.bashrc* file, include
 the following variables that are unique to your NFS environment:
 ....
-export CCP_SECURITY_CONTEXT='"supplementalGroups": [65534]"'
+export CCP_SECURITY_CONTEXT='"supplementalGroups": [65534]'
 export CCP_STORAGE_PATH=/mnt/nfsfileshare
 export CCP_NFS_IP=192.168.0.118
+export CCP_STORAGE_MODE=ReadWriteMany
+export CCP_STORAGE_CAPACITY=400M
 ....
 
-Next, assuming that you are setting up NFS as your storage option, you
-will need to run the following commands:
-....
-cd $CCPROOT/examples/pv
-./create-pv.sh nfs
-....
-
-In this example above we assume the group ownership of the NFS mount
-is *nfsnobody* or *65534*.
-
-NOTE: If you elect to configure HostPath or GCE as your storage option, please view
-README.txt for command-line usage for the ./create-pv.sh command.
+In this example above the group ownership of the NFS mount is assumed to be
+*nfsnobody* or *65534*.
 
 === Configure Dynamic Storage
 
 Dynamic storage classes can be used for the examples.  Gluster
 is only one example of a storage type that supports dynamic storage
-classes.
+classes.  The environment variable `CCP_STORAGE_CLASS` is used
+in the examples to determine whether or not to create a PersistentVolume
+manually or that it will be created dynamically using a StorageClass.  In
+the case of GKE, the default StorageClass is named *default*.   Storage
+class names are determined by the Kubernetes administrator and can vary.
 
 Setting up a Gluster cluster will offer you the ability to use
 dynamic storage provisioning in the examples.  A set of example
-Gluster configuration files is found at $CCPROOT/docs/gluster.
+Gluster configuration files is found at `$CCPROOT/docs/gluster`.
 This configuration is for a 3 node Gluster cluster which runs
 on a Centos7 Minimal VM deployment.  See https://github.com/CrunchyData/crunchy-containers/blob/master/docs/gluster/gluster-setup.adoc
 
 Using block storage requires a security context to be set
 as follows:
 ....
-export CCP_SECURITY_CONTEXT='"fsGroup":26"'
+export CCP_SECURITY_CONTEXT='"fsGroup":26'
+export CCP_STORAGE_CLASS=standard
+export CCP_STORAGE_MODE=ReadWriteOnce
+export CCP_STORAGE_CAPACITY=400M
 ....
 
 == OpenShift Environment
@@ -454,48 +461,6 @@ to get Helm installed and configured properly.
 Please see link:https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/[here]
 to view the official documentation regarding configuring DNS for your Kubernetes cluster.
 
-=== Google Cloud Environment
-
-The PostgreSQL Container Suite was tested on Google Container Engine.
-
-Here is a link to set up a Kube cluster on GCE:
-https://kubernetes.io/docs/getting-started-guides/gce
-
-Setup the persistent disks using GCE disks by first editing
-your *bashrc* file and export the GCE settings to match your
-GCE environment.
-
-....
-export GCE_DISK_ZONE=us-central1-a
-export GCE_DISK_NAME=gce-disk-crunchy
-export GCE_DISK_SIZE=4
-export GCE_FS_FORMAT=ext4
-....
-
-Then create the PVs used by the examples, passing in the *gce*
-value as a parameter. This will cause the GCE disks to be created:
-....
-cd $CCPROOT/examples/pv
-./create-pv.sh gce
-cd $CCPROOT/examples/pv
-....
-
-Here is a link that describes more information on GCE persistent disk:
-https://cloud.google.com/container-engine/docs/tutorials/persistent-disk/
-
-
-To have the persistent disk examples work, you will need to specify
-a *fsGroup* setting in the *SecurityContext* of each pod script
-as follows:
-....
-       "securityContext": {
-        "fsGroup": 26
-        },
-....
-
-For our PostgreSQL container, a UID of 26 is specified as the user
-which corresponds to the *fsGroup* value.
-
 ===  Tips
 
 Make sure your hostname resolves to a single IP address in your
@@ -510,8 +475,8 @@ hostname --ip-address
 === NFS Installation
 
 NOTE: Most of the Crunchy containers run as the postgres UID (26), but you
-will notice that when *supplementalGroups* are specified, the pod
-will include the nfsnobody group in the list of groups for the pod user.
+will notice that when `supplementalGroups` is specified, the pod
+will include the `nfsnobody` group in the list of groups for the pod user.
 
 First, if you are running your NFS system with SELinux in enforcing mode, you will need to run the following command to allow NFS write permissions:
 ....
@@ -547,7 +512,7 @@ look into the link:https://www.novell.com/support/kb/doc.php?id=7010210[noac mou
 
 == Legal Notices
 
-Copyright © 2018 Crunchy Data Solutions, Inc.
+Copyright 2017 - 2018 Crunchy Data Solutions, Inc.
 
 CRUNCHY DATA SOLUTIONS, INC. PROVIDES THIS GUIDE ``AS IS'' WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF NON INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 

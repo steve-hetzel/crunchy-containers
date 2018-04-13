@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -15,17 +15,15 @@
 
 echo "Cleaning up..."
 
-CONTAINER_NAME=syncprimary
+PRIMARY_CONTAINER_NAME=primarysync
+SYNC_CONTAINER_NAME=replicasync
+ASYNC_CONTAINER_NAME=replicaasync
 
-docker stop $CONTAINER_NAME
-docker rm $CONTAINER_NAME
+docker stop $PRIMARY_CONTAINER_NAME
+docker rm $PRIMARY_CONTAINER_NAME
 
-CONTAINER_NAME=syncreplica
+docker stop $SYNC_CONTAINER_NAME
+docker rm $SYNC_CONTAINER_NAME
 
-docker stop $CONTAINER_NAME
-docker rm $CONTAINER_NAME
-
-CONTAINER_NAME=asyncreplica
-
-docker stop $CONTAINER_NAME
-docker rm $CONTAINER_NAME
+docker stop $ASYNC_CONTAINER_NAME
+docker rm $ASYNC_CONTAINER_NAME

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2017 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -18,29 +18,15 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 $DIR/cleanup.sh
 
-# create the service account used in the containers
-kubectl create -f $DIR/set-sa.json
-
-# sample command to create initial gce disk
-#gcloud compute disks create gce-disk-crunchy --zone us-central1-c
-
-# create the storage class
-kubectl create -f $DIR/storage-class.yaml
-
 # as of Kube 1.6, we need to allow the service account to perform
 # a label command, for this example, we open up wide permissions
 # for all serviceaccounts, this is NOT for production!
-kubectl create clusterrolebinding permissive-binding \
+${CCP_CLI?} create clusterrolebinding statefulset-dyn-sa \
   --clusterrole=cluster-admin \
   --user=admin \
   --user=kubelet \
   --group=system:serviceaccounts \
   --namespace=$CCP_NAMESPACE
 
-# create the services for the example
-kubectl create -f $DIR/set-service.json
-kubectl create -f $DIR/set-primary-service.json
-kubectl create -f $DIR/set-replica-service.json
-
-# create the stateful set
-expenv -f $DIR/set.json | kubectl create -f -
+${CCP_CLI?} create -f $DIR/storage-class.yaml
+expenv -f $DIR/statefulset-dyn.json | ${CCP_CLI?} create -f -

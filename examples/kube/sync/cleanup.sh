@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2018 Crunchy Data Solutions, Inc.
+# Copyright 2016 - 2018 Crunchy Data Solutions, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kubectl delete pod replicasync replicaasync
-kubectl delete pod primarysync
-kubectl delete service primarysync
-kubectl delete service replicasync replicaasync
-$CCPROOT/examples/waitforterm.sh primarysync kubectl
-$CCPROOT/examples/waitforterm.sh replicasync kubectl
+${CCP_CLI?} delete pod replicasync replicaasync
+${CCP_CLI?} delete pod primarysync
+${CCP_CLI?} delete service primarysync
+${CCP_CLI?} delete service replicasync
+$CCPROOT/examples/waitforterm.sh primarysync ${CCP_CLI?}
+$CCPROOT/examples/waitforterm.sh replicasync ${CCP_CLI?}

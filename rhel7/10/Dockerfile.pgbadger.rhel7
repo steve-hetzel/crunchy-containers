@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/rhel
+FROM registry.access.redhat.com/rhel7
 
 MAINTAINER Crunchy Data <support@crunchydata.com>
 
@@ -20,8 +20,8 @@ LABEL name="crunchydata/pgbadger" \
         io.openshift.expose-services="" \
         io.openshift.tags="crunchy,database"
 
-COPY docs/pgbadger/help.1 /help.1
-COPY docs/pgbadger/help.md /help.md
+COPY docs/atomic/pgbadger/help.1 /help.1
+COPY docs/atomic/pgbadger/help.md /help.md
 COPY docs/licenses /licenses
 
 ENV PGVERSION="10"

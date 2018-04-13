@@ -12,16 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kubectl delete service pgadmin4
-kubectl delete pod pgadmin4
-kubectl delete secret pgadmin-secrets
-kubectl delete secret pgadmin-tls
+${CCP_CLI?} delete service pgadmin4-https
+${CCP_CLI?} delete pod pgadmin4-https
+${CCP_CLI?} delete secret pgadmin4-https-secrets
+${CCP_CLI?} delete secret pgadmin4-https-tls
 
-kubectl delete pvc pgadmin-https-pvc
+${CCP_CLI?} delete pvc pgadmin4-https-data
+${CCP_CLI?} delete pv pgadmin4-https-data
 
 rm -f ./server.crt ./server.key ./privkey.pem
 
-$CCPROOT/examples/waitforterm.sh pgadmin4 kubectl
-
-sudo CCP_STORAGE_PATH=$CCP_STORAGE_PATH rm -rf $CCP_STORAGE_PATH/pgadmin4.db $CCP_STORAGE_PATH/pgadmin4.log
-sudo CCP_STORAGE_PATH=$CCP_STORAGE_PATH rm -rf $CCP_STORAGE_PATH/sessions $CCP_STORAGE_PATH/storage
+$CCPROOT/examples/waitforterm.sh pgadmin4 ${CCP_CLI?}

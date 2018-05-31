@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+source ${CCPROOT}/examples/common.sh
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 $DIR/cleanup.sh
+
+echo_info "Creating the example components.."
 
 ${CCP_CLI?} create configmap watch-hooks-configmap \
                 --from-file=./hooks/watch-pre-hook \
@@ -27,4 +31,13 @@ ${CCP_CLI?} create rolebinding pg-watcher-sa-edit \
   --serviceaccount=$CCP_NAMESPACE:pg-watcher \
   --namespace=$CCP_NAMESPACE
 
-envsubst < $DIR/watch.yaml | ${CCP_CLI?} create -f -
+#envsubst < $DIR/watch.yaml | ${CCP_CLI?} create -f -
+
+if [ "$CCP_CLI" = "oc" ]; then
+	echo "an openshift example..."
+expenv -f $DIR/watch-ocp.yaml | ${CCP_CLI?} create -f -
+else
+	echo "a kube example..."
+expenv -f $DIR/watch.yaml | ${CCP_CLI?} create -f -
+fi
+

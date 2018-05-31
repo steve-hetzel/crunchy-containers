@@ -5,9 +5,9 @@ MAINTAINER Crunchy Data <support@crunchydata.com>
 LABEL name="crunchydata/collect" \
         vendor="crunchy data" \
       	PostgresVersion="10" \
-      	PostgresFullVersion="10.3" \
+      	PostgresFullVersion="10.4" \
         version="7.3" \
-        release="1.8.2" \
+        release="1.8.3" \
         #build-date="2017-05-11" \
         url="https://crunchydata.com" \
         summary="Provides metrics for crunchy-postgres" \
@@ -20,9 +20,9 @@ LABEL name="crunchydata/collect" \
         io.openshift.expose-services="" \
         io.openshift.tags="crunchy,database"
 
-COPY docs/atomic/collect/help.1 /help.1
-COPY docs/atomic/collect/help.md /help.md
-COPY docs/licenses /licenses
+COPY conf/atomic/collect/help.1 /help.1
+COPY conf/atomic/collect/help.md /help.md
+COPY conf/licenses /licenses
 
 ENV PGVERSION="10"
 

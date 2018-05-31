@@ -3,10 +3,10 @@ FROM centos:7
 LABEL name="crunchydata/restore" \
         vendor="crunchy data" \
       	PostgresVersion="9.6" \
-      	PostgresFullVersion="9.6.8" \
+      	PostgresFullVersion="9.6.9" \
         version="7.3" \
-        release="1.8.2" \
-        build-date="2018-01-31" \
+        release="1.8.3" \
+        build-date="2018-05-08" \
         url="https://crunchydata.com" \
         summary="Performs a pg_restore on a database container" \
         description="Meant to be executed upon demand, this container will run pg_restore against a running database container and write the backup files to a mounted directory." \
@@ -28,6 +28,7 @@ RUN yum -y update && yum install -y epel-release \
  	nss_wrapper \
 	procps-ng \
 	unzip \
+	file \
  && yum -y install postgresql96 postgresql96-server \
  && yum clean all -y
 
@@ -35,10 +36,10 @@ RUN mkdir -p /opt/cpm/bin /pgdata /opt/cpm/conf
 ADD bin/pgrestore/ /opt/cpm/bin
 ADD bin/common /opt/cpm/bin
 ADD conf/pgrestore/ /opt/cpm/conf
-RUN chown -R postgres:postgres /opt/cpm /pgdata
+RUN chown -R 26:26 /opt/cpm /pgdata
 
 VOLUME ["/pgdata"]
 
 USER 26
 
-CMD ["/opt/cpm/bin/start-pgrestorejob.sh"]
+CMD ["/opt/cpm/bin/start.sh"]

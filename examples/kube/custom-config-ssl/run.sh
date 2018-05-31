@@ -13,32 +13,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+source ${CCPROOT}/examples/common.sh
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CONTAINER_NAME='custom-config-ssl'
 
-$DIR/cleanup.sh
+${DIR?}/cleanup.sh
 
-CONFDIR=$CCP_STORAGE_PATH/custom-config-ssl-pgconf
-sudo CONFDIR=$CONFDIR mkdir $CONFDIR
-sudo CONFDIR=$CONFDIR chown nfsnobody:nfsnobody $CONFDIR
-sudo CONFDIR=$CONFDIR cp $DIR/configs/setup.sql $CONFDIR
-sudo CONFDIR=$CONFDIR cp $DIR/configs/pg_hba.conf $CONFDIR
-sudo CONFDIR=$CONFDIR cp $DIR/configs/postgresql.conf $CONFDIR
-sudo CONFDIR=$CONFDIR chown nfsnobody:nfsnobody $CONFDIR/setup.sql
-sudo CONFDIR=$CONFDIR chown nfsnobody:nfsnobody $CONFDIR/postgresql.conf
-sudo CONFDIR=$CONFDIR chown nfsnobody:nfsnobody $CONFDIR/pg_hba.conf
-sudo CONFDIR=$CONFDIR chmod g+r $CONFDIR/setup.sql $CONFDIR/postgresql.conf $CONFDIR/pg_hba.conf
+${DIR?}/../../ssl-creator.sh "testuser@crunchydata.com" "${CONTAINER_NAME?}" "$(pwd)"
+if [[ $? -ne 0 ]]
+then
+    echo_err "Failed to create certs, exiting.."
+    exit 1
+fi
 
-sudo CONFDIR=$CONFDIR cp $DIR/certs/ca.crt $CONFDIR
-sudo CONFDIR=$CONFDIR cp $DIR/certs/server.key $CONFDIR
-sudo cat ./certs/server.crt ./certs/server-intermediate.crt ./certs/ca.crt > /tmp/server.crt
-sudo mv /tmp/server.crt $CONFDIR/server.crt
+cp ${DIR?}/certs/server.* ${DIR?}/configs
+cp ${DIR?}/certs/ca.* ${DIR?}/configs
 
-sudo CONFDIR=$CONFDIR chown nfsnobody:nfsnobody $CONFDIR/ca.crt
-sudo CONFDIR=$CONFDIR chown nfsnobody:nfsnobody $CONFDIR/server.key
-sudo CONFDIR=$CONFDIR chown nfsnobody:nfsnobody $CONFDIR/server.crt
-sudo CONFDIR=$CONFDIR chmod 640 $CONFDIR/ca.crt $CONFDIR/server.key $CONFDIR/server.crt
-sudo CONFDIR=$CONFDIR chmod 400 $CONFDIR/server.key
+create_storage "${CONTAINER_NAME?}"
+if [[ $? -ne 0 ]]
+then
+    echo_err "Failed to create storage, exiting.."
+    exit 1
+fi
 
-expenv -f $DIR/custom-config-ssl-pv.json | ${CCP_CLI?} create -f -
+${CCP_CLI?} create secret generic ${CONTAINER_NAME?}-secrets \
+    --from-file=ca-crt=${DIR?}/configs/ca.crt \
+    --from-file=ca-crl=${DIR?}/configs/ca.crl \
+    --from-file=server-crt=${DIR?}/configs/server.crt \
+    --from-file=server-key=${DIR?}/configs/server.key \
+    --from-file=pgbackrest-conf=${DIR?}/configs/pgbackrest.conf \
+    --from-file=pg-hba-conf=${DIR?}/configs/pg_hba.conf \
+    --from-file=pg-ident-conf=${DIR?}/configs/pg_ident.conf \
+    --from-file=postgresql-conf=${DIR?}/configs/postgresql.conf
+
 expenv -f $DIR/custom-config-ssl.json | ${CCP_CLI?} create -f -
+
+echo ""
+echo "To connect via SSL, run the following once the DB is ready: "
+echo "source ./env.sh"
+echo "psql "postgresql://${CONTAINER_NAME?}:5432/postgres?sslmode=verify-full" -U testuser"
+echo ""

@@ -5,9 +5,9 @@ MAINTAINER Crunchy Data <support@crunchydata.com>
 LABEL name="crunchydata/upgrade" \
         vendor="crunchy data" \
         PostgresVersion="9.6" \
-        PostgresFullVersion="9.6.8" \
+        PostgresFullVersion="9.6.9" \
         version="7.3" \
-        release="1.8.2" \
+        release="1.8.3" \
         #build-date="2017-05-11" \
         url="https://crunchydata.com" \
         summary="Provides a pg_upgrade capability that performs a major PostgreSQL upgrade." \
@@ -20,9 +20,9 @@ LABEL name="crunchydata/upgrade" \
         io.openshift.expose-services="" \
         io.openshift.tags="crunchy,database"
 
-COPY docs/atomic/upgrade/help.1 /help.1
-COPY docs/atomic/upgrade/help.md /help.md
-COPY docs/licenses /licenses
+COPY conf/atomic/upgrade/help.1 /help.1
+COPY conf/atomic/upgrade/help.md /help.md
+COPY conf/licenses /licenses
 
 ENV PGVERSION="9.6"
 

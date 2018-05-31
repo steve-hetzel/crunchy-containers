@@ -1,27 +1,4 @@
 {
-    "kind": "PersistentVolumeClaim",
-    "apiVersion": "v1",
-    "metadata": {
-        "name": "pgdump-pgdata"
-    },
-    "spec": {
-        "selector": {
-          "matchLabels": {
-            "name": "pgdump-pgdata"
-          }
-        },
-        "accessModes": [
-            "ReadWriteMany"
-        ],
-        "resources": {
-            "requests": {
-                "storage": "400M"
-            }
-        }
-    }
-}
-
-{
     "apiVersion": "batch/v1",
     "kind": "Job",
     "metadata": {
@@ -72,16 +49,8 @@
                                 "value": "password"
                             },
                             {
-                                "name": "PGDUMP_PORT",
-                                "value": "5432"
-                            },
-                            {
-                                "name": "PGDUMP_ALL",
-                                "value": "true"
-                            },
-                            {
-                                "name": "PGDUMP_VERBOSE",
-                                "value": "true"
+                                "name": "PGDUMP_DB",
+                                "value": "postgres"
                             }
                         ]
                     }

@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source ${CCPROOT}/examples/common.sh
+echo_info "Cleaning up.."
 
-${CCP_CLI?} delete pvc backrest-restore-pgdata
-${CCP_CLI?} delete pv backrest-restore-pgdata
 ${CCP_CLI?} delete job backrest-full-restore-job
 ${CCP_CLI?} delete job backrest-delta-restore-job

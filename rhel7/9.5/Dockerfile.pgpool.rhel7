@@ -4,10 +4,10 @@ MAINTAINER Crunchy Data <support@crunchydata.com>
 
 LABEL name="crunchydata/pgpool" \
 	PostgresVersion="9.5" \
-	PostgresFullVersion="9.5.12" \
+	PostgresFullVersion="9.5.13" \
         vendor="crunchy data" \
         version="7.3" \
-        release="1.8.2" \
+        release="1.8.3" \
         #build-date="2017-05-11" \
         url="https://crunchydata.com" \
         summary="Contains the pgpool utility as a PostgreSQL-aware load balancer" \
@@ -20,9 +20,9 @@ LABEL name="crunchydata/pgpool" \
         io.openshift.expose-services="" \
         io.openshift.tags="crunchy,database"
 
-COPY docs/atomic/pgpool/help.1 /help.1
-COPY docs/atomic/pgpool/help.md /help.md
-COPY docs/licenses /licenses
+COPY conf/atomic/pgpool/help.1 /help.1
+COPY conf/atomic/pgpool/help.md /help.md
+COPY conf/licenses /licenses
 
 # PGDG Postgres repo
 #RUN rpm -Uvh http://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/pgdg-redhat95-9.5-2.noarch.rpm

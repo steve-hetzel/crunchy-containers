@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+source ${CCPROOT}/examples/common.sh
+echo_info "Cleaning up.."
+
 ${CCP_CLI?} delete job pgdump
 ${CCP_CLI?} delete pvc pgdump-pgdata
 ${CCP_CLI?} delete pv pgdump-pgdata
+
+$CCPROOT/examples/waitforterm.sh pgdump ${CCP_CLI?}

@@ -13,14 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-${CCP_CLI?} delete pod pg-primary
-${CCP_CLI?} delete pod pg-replica
-${CCP_CLI?} delete pod pgbouncer
-${CCP_CLI?} delete service pg-primary
-${CCP_CLI?} delete service pg-replica
-${CCP_CLI?} delete service pgbouncer
-${CCP_CLI?} delete configmap pgbouncer-pgconf
+source ${CCPROOT}/examples/common.sh
+echo_info "Cleaning up.."
 
-$CCPROOT/examples/waitforterm.sh pgbouncer ${CCP_CLI?}
+${CCP_CLI?} delete pod pg-primary pg-replica
+${CCP_CLI?} delete pod pgbouncer-primary pgbouncer-replica
+${CCP_CLI?} delete service pg-primary pg-replica
+${CCP_CLI?} delete service pgbouncer-primary pgbouncer-replica
+${CCP_CLI?} delete secret pgbouncer-secrets
+${CCP_CLI?} delete secret pgsql-secrets
+
+$CCPROOT/examples/waitforterm.sh pgbouncer-primary ${CCP_CLI?}
+$CCPROOT/examples/waitforterm.sh pgbouncer-replica ${CCP_CLI?}
 $CCPROOT/examples/waitforterm.sh pg-primary ${CCP_CLI?}
 $CCPROOT/examples/waitforterm.sh pg-replica ${CCP_CLI?}

@@ -6,8 +6,8 @@ LABEL name="crunchydata/pgpool" \
         vendor="crunchy data" \
         version="7.3" \
       	PostgresVersion="9.6" \
-      	PostgresFullVersion="9.6.8" \
-        release="1.8.2" \
+      	PostgresFullVersion="9.6.9" \
+        release="1.8.3" \
         #build-date="2017-05-11" \
         url="https://crunchydata.com" \
         summary="Contains the pgpool utility as a PostgreSQL-aware load balancer" \
@@ -20,9 +20,9 @@ LABEL name="crunchydata/pgpool" \
         io.openshift.expose-services="" \
         io.openshift.tags="crunchy,database"
 
-COPY docs/atomic/pgpool/help.1 /help.1
-COPY docs/atomic/pgpool/help.md /help.md
-COPY docs/licenses /licenses
+COPY conf/atomic/pgpool/help.1 /help.1
+COPY conf/atomic/pgpool/help.md /help.md
+COPY conf/licenses /licenses
 
 ENV PGVERSION="9.6"
 

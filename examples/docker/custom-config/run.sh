@@ -14,52 +14,35 @@
 # limitations under the License.
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CONTAINER_NAME='custom-config'
+PGDATA_VOL="${CONTAINER_NAME?}-pgdata"
+PGWAL_VOL="${CONTAINER_NAME?}-wal"
+BACKUP_VOL="${CONTAINER_NAME?}-backup"
 
-$DIR/cleanup.sh
-
-CONTAINER_NAME=custom-config
+${DIR?}/cleanup.sh
 
 echo "Starting the ${CONTAINER_NAME} example..."
 
-CONF_VOLUME=${CONTAINER_NAME}-pgconf
-DATA_VOLUME=${CONTAINER_NAME}-pgdata
-WAL_VOLUME=${CONTAINER_NAME}-wal
-
-docker volume create --driver local --name=$CONF_VOLUME
-docker volume create --driver local --name=$DATA_VOLUME
-docker volume create --driver local --name=$WAL_VOLUME
-
-docker run -it --privileged=true \
-	--volume-driver=local \
-	-v $DIR:/fromdir \
-	-v $CONF_VOLUME:/pgconf:z \
-	--name=${CONTAINER_NAME}-setup \
-	$CCP_IMAGE_PREFIX/crunchy-postgres:$CCP_IMAGE_TAG cp /fromdir/setup.sql /pgconf
-docker run -it --privileged=true \
-	--volume-driver=local \
-	-v $CONF_VOLUME:/pgconf:z \
-	--name=${CONTAINER_NAME}-ls \
-	$CCP_IMAGE_PREFIX/crunchy-postgres:$CCP_IMAGE_TAG ls /pgconf
+docker volume create --driver local --name=${PGDATA_VOL?}
+docker volume create --driver local --name=${PGWAL_VOL?}
+docker volume create --driver local --name=${BACKUP_VOL?}
 
 docker run \
-	-p 12009:5432 \
-	-v $CONF_VOLUME:/pgconf:z \
-	-v $DATA_VOLUME:/pgdata:z \
-	-v $WAL_VOLUME:/pgwal:rw \
-	-e TEMP_BUFFERS=9MB \
-	-e MAX_CONNECTIONS=101 \
-	-e SHARED_BUFFERS=129MB \
-	-e MAX_WAL_SENDERS=7 \
-	-e XLOGDIR=/pgwal \
-	-e WORK_MEM=5MB \
-	-e PG_MODE=primary \
-	-e PG_PRIMARY_USER=primaryuser \
-	-e PG_PRIMARY_PASSWORD=password \
-	-e PG_PRIMARY_PORT=5432 \
-	-e PG_USER=testuser \
-	-e PG_ROOT_PASSWORD=password \
-	-e PG_PASSWORD=password \
-	-e PG_DATABASE=userdb \
-	--name=${CONTAINER_NAME} \
-	--hostname=${CONTAINER_NAME} \
-	-d $CCP_IMAGE_PREFIX/crunchy-postgres:$CCP_IMAGE_TAG
+    --name=${CONTAINER_NAME?} \
+    --hostname=${CONTAINER_NAME?} \
+    --publish=5432:5432 \
+    --volume=${DIR?}/configs:/pgconf \
+    --volume=${PGDATA_VOL?}:/pgdata \
+    --volume=${PGWAL_VOL?}:/pgwal \
+    --volume=${BACKUP_VOL?}:/backrestrepo \
+    --env=PG_MODE=primary \
+    --env=PG_PRIMARY_USER=primaryuser \
+    --env=PG_PRIMARY_PASSWORD=password \
+    --env=PG_PRIMARY_HOST=localhost \
+    --env=PG_PRIMARY_PORT=5432 \
+    --env=PG_DATABASE=userdb \
+    --env=PG_USER=testuser \
+    --env=PG_PASSWORD=password \
+    --env=PG_ROOT_PASSWORD=password \
+    --env=XLOGDIR=true \
+    --detach ${CCP_IMAGE_PREFIX?}/crunchy-postgres:${CCP_IMAGE_TAG?}

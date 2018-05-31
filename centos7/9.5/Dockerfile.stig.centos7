@@ -37,7 +37,7 @@ RUN yum -y update && yum -y install epel-release \
     net-tools \
     lsof \
     fipscheck-lib \
- && yum -y install postgresql95-server postgresql95-contrib postgresql95 \
+ && yum -y install postgresql95-server postgresql95-contrib postgresql95-devel postgresql95 \
     pgaudit_95 \
     pgbackrest \
  && yum -y clean all

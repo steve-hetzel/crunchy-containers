@@ -50,7 +50,7 @@ ADD bin/pgstigcheck-inspec /opt/cpm/bin
 ADD bin/common /opt/cpm/bin
 ADD conf/pgstigcheck-inspec /opt/cpm/conf
 
-RUN git clone https://github.com/CrunchyData/pgstigcheck-inspec /opt/cpm/bin/pgstigcheck-inspec/
+RUN git clone https://github.com/steve-hetzel/pgstigcheck-inspec /opt/cpm/bin/pgstigcheck-inspec/
 
 USER 2
 

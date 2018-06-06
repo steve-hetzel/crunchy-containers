@@ -12,6 +12,6 @@ create database PG_DATABASE;
 
 create extension pg_stat_statements;
 create extension pgaudit;
-alter system set shared_preload_libraries='pgaudit';
 alter system set pgaudit.log = 'ddl,read,role, write';
+alter system set pgaudit.log_parameter = on;
 
